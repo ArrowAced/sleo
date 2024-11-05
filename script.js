@@ -73,6 +73,7 @@ setAccessibilitySettings()
 loadSavedPlugins();
 loadCustomCss();
 loadCustomTheme();
+applyTintValues();
 
 function replsh(rpl) {
     const trimmedString = rpl.length > 25 ?
@@ -697,6 +698,7 @@ function loadpost(p) {
     const postContainer = document.createElement("div");
     postContainer.classList.add("post");
     postContainer.setAttribute("tabindex", "0");
+    postContainer.style.setProperty("--profilecolor","#" + p.author.avatar_color)
 
     const ba = Object.keys(blockedWords);
     const bc = ba.some(word => {
@@ -2193,6 +2195,7 @@ function loadGeneral() {
         ${createSettingSection("blockedmessages", lang().general_list.title.blockedmessages, lang().general_list.desc.blockedmessages)}
         ${createSettingSection("censorwords", lang().general_list.title.censorwords, lang().general_list.desc.censorwords)}
         ${createSettingSection("notifications", lang().general_list.title.notifications, lang().general_list.desc.notifications, 1)}
+        <button class="blockeduser button" onclick="tintingModal()">Post Tint Settings</button>
         </div>
         <h3>${lang().general_sub.accessibility}</h3>
         <div class="settings-section-outer">
@@ -4080,7 +4083,7 @@ function preventClose(event) {
 
 function closeImage() {
     document.documentElement.style.overflow = "";
-    
+        
     const mdlbck = document.querySelector('.image-back');
     
     if (mdlbck) {
@@ -6296,4 +6299,62 @@ function createModal(data) {
             }
         }
     }
+}
+
+function tintingModal() {
+    document.documentElement.style.overflow = "hidden";
+    
+    const mdlbck = document.querySelector('.modal-back');
+    if (mdlbck) {
+        mdlbck.style.display = 'flex';
+        
+        const mdl = mdlbck.querySelector('.modal');
+        mdl.id = 'mdl-uptd';
+        if (mdl) {
+            const mdlt = mdl.querySelector('.modal-top');
+            if (mdlt) {
+                mdlt.innerHTML = `
+                <h3>Post Tint Settings</h3>
+				<h4>Username Tint Strength</h4>
+                <input id="user-tint-input" class="mdl-inp" placeholder="30" value="${tintsettings().user}" type="text" inputmode="numeric" pattern="\d*">
+				<h4>Post Tint Strength</h4>
+                <input id="post-tint-input" class="mdl-inp" placeholder="15" value="${tintsettings().post}" type="text" inputmode="numeric" pattern="\d*">
+                `;
+            }
+            const mdbt = mdl.querySelector('.modal-bottom');
+            if (mdbt) {
+                mdbt.innerHTML = `
+                <button class="modal-back-btn" onclick="saveTintSettings()">Save</button>
+                `;
+            }
+        }
+    }
+}
+
+function tintsettings() {
+    const storedsettings = localStorage.getItem('tintsettings');
+    if (!storedsettings) {
+        const defaultSettings = {
+            "user": 30,
+			"post": 15
+        };
+        localStorage.setItem('tintsettings', JSON.stringify(defaultSettings));
+        return defaultSettings;
+    }
+
+    return JSON.parse(storedsettings);
+}
+
+function saveTintSettings() {
+	const usertint = document.getElementById("user-tint-input").value.trim();
+	const posttint = document.getElementById("post-tint-input").value.trim();
+	localStorage.setItem('tintsettings', JSON.stringify({"user":usertint,"post":posttint}));
+	applyTintValues();
+	closemodal();
+}
+
+function applyTintValues() {
+	const tints = tintsettings();
+	document.documentElement.style.setProperty("--usertint", tints.user+"%");
+    document.documentElement.style.setProperty("--posttint", tints.post+"%");
 }

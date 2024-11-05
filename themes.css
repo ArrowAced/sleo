@@ -47,6 +47,9 @@
     --button-padding: 12px;
     --button-margin: 10px;
     --color-scheme: dark;
+
+    --usertint: 30%;
+    --posttint: 15%;
 }
 
 .dark-theme {

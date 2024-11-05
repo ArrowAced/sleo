@@ -370,6 +370,7 @@ img.embed {
     max-width: 75%;
     -webkit-user-select: none;
     user-select: none;
+    color: color-mix(in srgb, var(--profilecolor) var(--usertint), var(--color));
 }
 
 .ulmember {
@@ -842,6 +843,7 @@ img.embed {
     display: flex;
     animation: var(--animation);
     position: relative;
+    color: color-mix(in srgb, var(--profilecolor) var(--posttint), var(--color));
 }
 
 .post:hover {
